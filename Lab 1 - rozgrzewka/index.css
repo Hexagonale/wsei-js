@@ -1,0 +1,8 @@
+.inputs {
+	display: flex;
+	flex-direction: column;
+	width: 200px;
+	row-gap: 15px;
+
+	margin-bottom: 20px;
+}

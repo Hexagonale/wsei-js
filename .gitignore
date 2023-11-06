@@ -1,0 +1,4 @@
+node_modules
+*.lock*
+*.tsbuildinfo
+.DS_Store

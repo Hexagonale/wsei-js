@@ -1,0 +1,54 @@
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+
+#tracks {
+	width: 100%;
+	padding: 10px;
+
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	row-gap: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+
+	box-sizing: border-box;
+}
+
+.track {
+	display: flex;
+	column-gap: 20px;
+	height: 100px;
+	background: #aaa;
+	padding: 10px;
+	border-radius: 5px;
+}
+
+.track > .controls {
+	width: 100px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.track > .entries-wrapper {
+	flex: 1;
+	height: 100%;
+	overflow: scroll;
+}
+
+.track > .entries-wrapper > .entries {
+	column-gap: 5px;
+	position: relative;
+}
+
+.track > .entries-wrapper > .entries > .entry {
+	position: absolute;
+	width: 10px;
+	height: 10px;
+	border-radius: 2px;
+}

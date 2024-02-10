@@ -118,12 +118,14 @@ class DrumKit {
 
 	private onAddTrack() {
 		const track = new Track(this.soundsProvider, () => this.onRemoveTrack(this.tracks.length));
+		console.log(track);
 		track.init();
 
 		this.tracks.push(track);
 	}
 
 	private onRemoveTrack(index: number) {
+		console.log({ index });
 		if (index < 0 || index >= this.tracks.length) {
 			return;
 		}

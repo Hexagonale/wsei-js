@@ -10,8 +10,9 @@
 	<body>
 		<div class="notes-list"></div>
 		<div class="note-editor">
-			<input type="text" name="note-title" id="note-editor-title" />
-			<textarea name="note-body" id="note-editor-body" cols="30" rows="10"></textarea>
+			<input type="text" placeholder="Title" name="note-title" id="note-editor-title" />
+			<textarea name="note-body" placeholder="Content" id="note-editor-body" cols="30" rows="10"></textarea>
+			<input type="text" name="note-color" placeholder="Color (hex or name)" id="note-editor-color" />
 			<button id="note-editor-button" onClick="addNote();">Save</button>
 		</div>
 	</body>

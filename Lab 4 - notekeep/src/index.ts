@@ -97,7 +97,13 @@ class NotesRenderer {
 		}
 
 		const notes = this.notesManager.getNotes();
-		console.log({ notes });
+		notes.sort((a, b) => {
+			if (a.pinned === b.pinned) {
+				return a.updatedAt > b.updatedAt ? -1 : 1;
+			}
+
+			return a.pinned ? -1 : 1;
+		});
 
 		notesList.innerHTML = '';
 		for (const note of notes) {
@@ -124,8 +130,40 @@ class NoteRender {
 		contentElement.innerText = this.note.content;
 		noteElement.appendChild(contentElement);
 
-		noteElement.addEventListener('click', () => {
-			console.log('clicked');
+		const pinButton = document.createElement('button');
+		pinButton.innerText = this.note.pinned ? 'Unpin' : 'Pin';
+		noteElement.appendChild(pinButton);
+		pinButton.addEventListener('click', () => {
+			notesManager.editNote({
+				id: this.note.id,
+				pinned: !this.note.pinned,
+			});
+			notesRenderer.render();
+		});
+
+		const editButton = document.createElement('button');
+		editButton.innerText = 'Edit';
+		noteElement.appendChild(editButton);
+		editButton.addEventListener('click', () => {
+			const title = prompt('Title', this.note.title);
+			const content = prompt('Content', this.note.content);
+			const color = prompt('Color', this.note.color);
+
+			if (title && content) {
+				notesManager.editNote({
+					id: this.note.id,
+					title: title ?? undefined,
+					content: content ?? undefined,
+					color: color ?? undefined,
+				});
+				notesRenderer.render();
+			}
+		});
+
+		const deleteButton = document.createElement('button');
+		deleteButton.innerText = 'Delete';
+		noteElement.appendChild(deleteButton);
+		deleteButton.addEventListener('click', () => {
 			notesManager.removeNote(this.note.id);
 			notesRenderer.render();
 		});
@@ -146,11 +184,12 @@ document.addEventListener('DOMContentLoaded', () => {
 const addNote = () => {
 	const title = (document.getElementById('note-editor-title') as any).value;
 	const content = (document.getElementById('note-editor-body') as any).value;
+	const color = (document.getElementById('note-editor-color') as any).value;
 
 	notesManager.createNote({
 		title,
 		content,
-		color: 'yellow',
+		color,
 	});
 	notesRenderer.render();
 };

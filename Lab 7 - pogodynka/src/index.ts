@@ -5,25 +5,55 @@ interface Weather {
 	icon: string;
 }
 
+interface CacheEntry {
+	weather: Weather;
+	timestamp: number;
+}
+
 class WeatherProvider {
+	private readonly maxCacheTime = 1000 * 60 * 5;
+
 	async getWeather(cityName: string): Promise<Weather | null> {
+		const cached = await this.tryCache(cityName);
+		if (cached) {
+			return cached;
+		}
+
 		try {
 			const response = await fetch(
 				`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=f4c40b1db9a0b1adaf8ccb2630ae6263&units=metric`
 			);
 			const data = await response.json();
 
-			return {
+			const weather = {
 				cityName,
 				temperature: data.main.temp,
 				humidity: data.main.humidity,
 				icon: data.weather[0].icon,
 			};
+			localStorage.setItem(`cache-${cityName}`, JSON.stringify({ weather, timestamp: Date.now() }));
+
+			return weather;
 		} catch (error) {
 			console.error('Error fetching weather', error);
 
 			return null;
 		}
+	}
+
+	async tryCache(cityName: string): Promise<Weather | null> {
+		const cache = localStorage.getItem(`cache-${cityName}`);
+		if (!cache) {
+			return null;
+		}
+
+		const cacheEntry = JSON.parse(cache);
+		if (Date.now() - cacheEntry.timestamp > this.maxCacheTime) {
+			localStorage.removeItem(`cache-${cityName}`);
+			return null;
+		}
+
+		return cacheEntry.weather;
 	}
 }
 
@@ -77,7 +107,11 @@ class WeatherRenderer {
 class App {
 	constructor(private readonly placesManager: PlacesManager, private readonly weatherProvider: WeatherProvider) {}
 
+	private readonly refreshInterval = 1000 * 60 * 5;
+
 	async init() {
+		this.clearWeathers();
+
 		const places = this.placesManager.getPlaces();
 		for (const place of places) {
 			const weather = await this.weatherProvider.getWeather(place);
@@ -87,6 +121,8 @@ class App {
 
 			this.addWeather(weather);
 		}
+
+		setTimeout(() => this.init(), this.refreshInterval);
 	}
 
 	async getWeather() {
@@ -124,6 +160,12 @@ class App {
 		const weathersDiv = document.getElementById('weathers') as HTMLDivElement;
 
 		weathersDiv.removeChild(weathersDiv.firstChild!);
+	}
+
+	private clearWeathers() {
+		const weathersDiv = document.getElementById('weathers') as HTMLDivElement;
+
+		weathersDiv.innerHTML = '';
 	}
 }
 

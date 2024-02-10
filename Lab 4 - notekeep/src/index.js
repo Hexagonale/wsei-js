@@ -91,11 +91,28 @@ class NoteRender {
         const contentElement = document.createElement('p');
         contentElement.innerText = this.note.content;
         noteElement.appendChild(contentElement);
+        noteElement.addEventListener('click', () => {
+            console.log('clicked');
+            notesManager.removeNote(this.note.id);
+            notesRenderer.render();
+        });
         return noteElement;
     }
 }
+let notesManager;
+let notesRenderer;
 document.addEventListener('DOMContentLoaded', () => {
-    const notesManager = new NotesManager();
-    const notesRenderer = new NotesRenderer(notesManager);
+    notesManager = new NotesManager();
+    notesRenderer = new NotesRenderer(notesManager);
     notesRenderer.render();
 });
+const addNote = () => {
+    const title = document.getElementById('note-editor-title').value;
+    const content = document.getElementById('note-editor-body').value;
+    notesManager.createNote({
+        title,
+        content,
+        color: 'yellow',
+    });
+    notesRenderer.render();
+};
